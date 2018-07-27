@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>gov.nasa.jpl</groupId>
+    <artifactId>k2mms</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <mbee.version>2.3.6-SNAPSHOT</mbee.version>
+    </properties>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>6</source>
+                    <target>6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-java-client</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>gov.nasa.jpl</groupId>
+            <artifactId>kservices</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <type>jar</type>
+            <systemPath>${project.basedir}/../kservices/target/kservices-2.4.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>gov.nasa.jpl.mbee.bae</groupId>
+            <artifactId>bae</artifactId>
+            <!--<version>${mbee.version}</version>-->
+            <version>1.0</version>
+            <scope>system</scope>
+            <type>jar</type>
+            <systemPath>${project.basedir}/../bae/target/bae-${mbee.version}.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>gov.nasa.jpl.mbee.util</groupId>
+            <artifactId>mbee_util</artifactId>
+            <version>${mbee.version}</version>
+        </dependency>
+
+    </dependencies>
+
+</project>
