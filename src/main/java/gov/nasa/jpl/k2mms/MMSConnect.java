@@ -123,6 +123,46 @@ public class MMSConnect {
         return true;
     }
 
+    public Map<String,Element> getMMSOwnedElementMap( String kElement ) {
+        List<Element> elements = getMMSOwnedElements( kElement );
+        Map<String,Element> elemMap = new LinkedHashMap<String, Element>();
+        for ( Element el : elements ) {
+            if ( el != null && el.get("id") != null ) {
+                String id = "" + el.get("id");
+                elemMap.put(id, el);
+            }
+        }
+        return elemMap;
+    }
+
+    public List<Element> getMMSOwnedElements( String kElement ) {
+        String mmsElement =  kToMMSElements.get( kElement );
+        if ( mmsElement == null ) mmsElement = kElement;
+        try {
+            System.out.println("api.getElement( project=" + project +
+                               ", ref=" + ref + ", mmsElement=" + mmsElement +
+                               ", 0, true, null )");
+            Elements elems =
+                    api.getElement( project, ref, mmsElement, 1,
+                                    false, null );
+            List<Element> elements = elems.getElements();
+            Iterator<Element> i = elements.iterator();
+            while (i.hasNext()) {
+                Element el = i.next();
+                if ( el.get("id") != null && el.get("id").equals(mmsElement) ) {
+                    i.remove();
+                    break;
+                }
+            }
+            System.out.println("api.getElement() found " +
+                               elements.size() + " owned elements.");
+            return elements;
+        } catch ( ApiException e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Element getMMSElement( String kElement ) {
         String mmsElement =  kToMMSElements.get( kElement );
         if ( mmsElement == null ) mmsElement = kElement;
@@ -157,6 +197,9 @@ public class MMSConnect {
         String mmsElement =  kToMMSElements.get( kElement );
         if ( mmsElement == null ) mmsElement = kElement;
         Element elem = getMMSElement( kElement );
+        return getPropertyValue( kElement, elem );
+    }
+    public Object getPropertyValue( String kElement, Element elem ) {
         try {
             String type = (String)elem.get( "type" );
             if ( type.equals("Property") ) {
@@ -186,12 +229,25 @@ public class MMSConnect {
     }
 
     public boolean setMMSPropertyValue( String varName, Object value ) {
-        Element elem = getMMSElement( varName );
+        Element el = setMMSPropertyValue( varName, value, null, true );
+        return el != null;
+    }
+    public Element setMMSPropertyValue( String varName, Object value, Element elem, boolean direct ) {
+        if ( elem == null ) {
+            elem = getMMSElement( varName );
+        }
+        System.out.println("setMMSPropertyValue( project=" + varName +
+                           ", value=" + value +
+                           " )");
         try {
             String type = (String)elem.get( "type" );
-            if ( type.equals("Property") ) {
+            if ( !type.equals("Property") ) {
+                System.err.println("Not setting non-property " + varName );
+            } else {
                 Map vMap = (Map)elem.get( "defaultValue" );
-                if ( vMap != null ) {
+                if ( vMap == null ) {
+
+                } else {
                     String valType = null;
                     try {
                         valType = (String)vMap.get( "type" );
@@ -212,16 +268,42 @@ public class MMSConnect {
                         }
                     }
                     vMap.put( "value", value );
-                    Elements elements = new Elements();
-                    elements.addElementsItem( elem );
-                    api.postElements( project, ref, elements);
-                    return true;
+                    if ( direct ) {
+                        Elements elements = new Elements();
+                        elements.addElementsItem( elem );
+                        System.out.println(
+                                "api.postElements( project=" + project
+                                + ", ref=" + ref + ", mmsElement=" + elements
+                                + " )" );
+                        //api.postElements( project, ref, elements );
+                        boolean succ = postElements( elements );
+                        if ( !succ ) {
+                            return null;
+                        }
+                    }
+                    return elem;
                 }
             }
         } catch ( Throwable t ) {
             Debug.breakpoint();
+            t.printStackTrace();
         }
-        return false;
+        return null;
+    }
+
+    public boolean postElements( Elements elements ) {
+        System.out.println(
+                "api.postElements( project=" + project
+                + ", ref=" + ref + ", mmsElement=" + elements
+                + " )" );
+        try {
+            api.postElements( project, ref, elements );
+        } catch ( ApiException e ) {
+            Debug.breakpoint();
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     public boolean setMMSPropertyFromParameter( String kElement ) {
