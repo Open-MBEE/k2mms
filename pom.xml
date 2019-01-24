@@ -32,7 +32,10 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-java-client</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
+            <!-- <scope>compile</scope> -->
+            <scope>system</scope>
+            <type>jar</type>
+            <systemPath>${project.basedir}/../mms-java-client/target/swagger-java-client-1.0.0.jar</systemPath>
         </dependency>
 
         <dependency>
