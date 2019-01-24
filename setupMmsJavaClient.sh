@@ -1,6 +1,7 @@
 #!/bin/bash
-if [ -e `ls -1 ../mms-java-client/target/swagger*.jar | tail -n 1` ]; then
-    echo "Already set up."
+jarFile=`ls -1 ../mms-java-client/target/swagger*.jar | tail -n 1`
+if [ -e "$jarFile" ]; then
+    echo "Already set up. $jarFile"
 else
     zipFile=`pwd`"/"`ls -1 mms*.zip`
     echo $zipFile
