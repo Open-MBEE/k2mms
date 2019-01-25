@@ -12,6 +12,19 @@
         <mbee.version>2.3.6-SNAPSHOT</mbee.version>
     </properties>
 
+    <distributionManagement>
+        <!-- use mvn -U deploy -DgeneratePom=true -Dpackaging=jar -->
+        <repository>
+            <id>artifactory</id>
+            <name>releases</name>
+            <url>https://cae-artifactory.jpl.nasa.gov/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>artifactory</id>
+            <name>snapshots</name>
+            <url>https://cae-artifactory.jpl.nasa.gov/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <build>
         <plugins>
@@ -25,6 +38,44 @@
             </plugin>
         </plugins>
     </build>
+	<profiles>
+        <profile>
+            <id>jenkins</id>
+                <dependencies>
+                    <dependency>
+                        <groupId>gov.nasa.jpl.mbee.bae</groupId>
+                        <artifactId>bae</artifactId>
+                        <version>${mbee.version}</version>
+                    </dependency>
+<!--
+                    <dependency>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-java-client</artifactId>
+                        <version>1.0.0</version>
+                        <scope>compile</scope>
+                    </dependency>
+-->
+                </dependencies>
+        </profile>
+        <profile>
+            <id>mbee-dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>gov.nasa.jpl.mbee.bae</groupId>
+                    <artifactId>bae</artifactId>
+                    <!--<version>${mbee.version}</version>-->
+                    <version>1.0</version>
+                    <scope>system</scope>
+                    <type>jar</type>
+                    <systemPath>${project.basedir}/../bae/target/bae-${mbee.version}.jar</systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
 
     <dependencies>
 
@@ -39,30 +90,42 @@
         </dependency>
 
         <dependency>
-            <groupId>gov.nasa.jpl</groupId>
-            <artifactId>kservices</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <type>jar</type>
-            <systemPath>${project.basedir}/../kservices/target/kservices-2.4.0-SNAPSHOT.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>gov.nasa.jpl.mbee.bae</groupId>
-            <artifactId>bae</artifactId>
-            <!--<version>${mbee.version}</version>-->
-            <version>1.0</version>
-            <scope>system</scope>
-            <type>jar</type>
-            <systemPath>${project.basedir}/../bae/target/bae-${mbee.version}.jar</systemPath>
-        </dependency>
-
-        <dependency>
             <groupId>gov.nasa.jpl.mbee.util</groupId>
             <artifactId>mbee_util</artifactId>
             <version>${mbee.version}</version>
         </dependency>
 
     </dependencies>
+
+    <!-- This repository is only needed to retrieve Alfresco parent POM. NOTE:
+        This can be removed when/if Alfresco will be on Maven Central NOTE: The repository
+        to be used for Alfresco Enterprise artifacts is https://artifacts.alfresco.com/nexus/content/groups/private/.
+        Please check with Alfresco Support to get credentials to add to your ~/.m2/settings.xml
+        if you are a Enterprise customer or Partner -->
+    <repositories>
+        <repository>
+            <id>artifactory-snapshots</id>
+            <name>snapshots</name>
+            <url>https://cae-artifactory.jpl.nasa.gov/artifactory/libs-snapshot-local</url>
+        </repository>
+        <repository>
+            <id>artifactory-releases</id>
+            <name>releases</name>
+            <url>https://cae-artifactory.jpl.nasa.gov/artifactory/libs-release-local</url>
+        </repository>
+        <repository>
+            <id>artifactory-external-releases</id>
+            <name>external-releases</name>
+            <url>https://cae-artifactory.jpl.nasa.gov/artifactory/ext-release-local</url>
+        </repository>
+
+        <!-- soap ui plugin -->
+        <repository>
+            <id>smartbear-sweden-plugin-repository</id>
+            <url>https://www.soapui.org/repository/maven2/</url>
+        </repository>
+    </repositories>
+
+
 
 </project>
